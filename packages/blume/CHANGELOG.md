@@ -1,5 +1,15 @@
 # blume
 
+## 2.2.8
+
+### Patch Changes
+
+- a22054e: Keep `blume dev` running when Astro reports an unhandled rejection. Since Astro 7.3.3, a config restart can strand a request while the dev app is still compiling. That happens when `blume dev` moves off a taken port with a browser already open, or after two quick edits to `blume.config.ts`. Astro's dev server reports the error and keeps serving, but Blume exited with `BLUME_INTERNAL`. Once the dev server is up, Blume now leaves those errors to Astro, as `astro dev` does.
+- 27c38f4: Stop `blume build` from warning `'highlight' is not recognized as a valid pseudo-element` in projects whose lockfile kept an older Vite. Tailwind CSS 4.3.3 and earlier pin LightningCSS 1.32 exactly, and package managers shared that copy with Vite's CSS minifier, which doesn't understand the `::highlight()` rule the narration player uses to shade the sentence being read. Blume now requires Tailwind CSS 4.3.5 and Astro 7.3.6 or later, which bring LightningCSS 1.33 and Vite 8.3.
+- 1998c0c: Stop reporting `BLUME_MDX_ATTRIBUTE_LIST` for braces inside `$$…$$` math in `.mdx` pages. MDX parses math before expressions, so a LaTeX subscript like `\sum_{i=1}^{n}` is no longer mistaken for an attribute list, in block or inline math.
+- ae34876: Fix `package-install` tabs that passed a `--` through or used `--save-exact`. A `create` command with initializer flags (`npm create vite@latest my-app -- --template react-ts`) now keeps the `--` only on the npm tab, so pnpm, Yarn, Bun, nub, and aube no longer pass it to the initializer, which then ignored the flags after it. Writing the command without `--` now adds it on the npm tab, which needs it. `run` commands with script arguments (`npm run dev -- --port 3000`) no longer pass a literal `--` to the script on pnpm and Yarn, or render a second one on npm. `--save-exact` and `--exact` now render as `-E`, which every manager accepts. Yarn rejected `--save-exact`, pnpm rejected `--exact`, and npm ignored `--exact`.
+- 599dc2f: `blume validate` now accepts a link to an accordion item, an expandable, or a tab on an `.mdx` page. An accordion item answers to its `id`, or else its title slugged (`#slow-installs` for `<AccordionItem title="Slow installs">`), and an expandable to its title slugged; an id that repeats on the page gets `-2`, `-3` after the first. A tab answers to its `id`, and in a group that opens tabs from the URL hash, a tab without one answers to its title slugged. Before, only headings, raw HTML ids, and `<a name>` counted, so a link that opened one of these was reported as `BLUME_BROKEN_ANCHOR`.
+
 ## 2.2.7
 
 ### Patch Changes
